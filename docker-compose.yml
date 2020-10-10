@@ -78,7 +78,6 @@ services:
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
       volumes:
@@ -139,7 +138,6 @@ services:
         - POPS_PORT=${POPS_PORT:-995}
         - SIEVE_PORT=${SIEVE_PORT:-4190}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - SUBMISSION_PORT=${SUBMISSION_PORT:-587}
         - SMTPS_PORT=${SMTPS_PORT:-465}
         - SMTP_PORT=${SMTP_PORT:-25}
@@ -365,7 +363,6 @@ services:
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
-        - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       volumes:
         - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,Z
         - ./data/assets/ssl:/var/lib/acme/:rw,z
@@ -391,9 +388,7 @@ services:
       environment:
         - TZ=${TZ}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
-        - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
         - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
         - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
       network_mode: "host"
@@ -413,7 +408,6 @@ services:
         - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
       environment:
-        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
@@ -451,7 +445,6 @@ services:
         - RATELIMIT_THRESHOLD=1
         - FAIL2BAN_THRESHOLD=1
         - ACME_THRESHOLD=1
-        - IPV6NAT_THRESHOLD=1
         - RSPAMD_THRESHOLD=5
         - OLEFY_THRESHOLD=5
         - MAILQ_THRESHOLD=20
@@ -513,47 +506,15 @@ services:
           aliases:
             - olefy
 
-    ipv6nat-mailcow:
-      depends_on:
-        - unbound-mailcow
-        - mysql-mailcow
-        - redis-mailcow
-        - clamd-mailcow
-        - rspamd-mailcow
-        - php-fpm-mailcow
-        - sogo-mailcow
-        - dovecot-mailcow
-        - postfix-mailcow
-        - memcached-mailcow
-        - nginx-mailcow
-        - acme-mailcow
-        - netfilter-mailcow
-        - watchdog-mailcow
-        - dockerapi-mailcow
-        - solr-mailcow
-      environment:
-        - TZ=${TZ}
-      image: robbertkl/ipv6nat
-      security_opt:
-        - label=disable
-      restart: always
-      privileged: true
-      network_mode: "host"
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        - /lib/modules:/lib/modules:ro
-
 networks:
   mailcow-network:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: br-mailcow
-    enable_ipv6: true
     ipam:
       driver: default
       config:
         - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
-        - subnet: ${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
 
 volumes:
   vmail-vol-1:
