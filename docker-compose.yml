@@ -1,6 +1,5 @@
 version: '2.1'
 services:
-
     unbound-mailcow:
       image: mailcow/unbound:1.12
       environment:
@@ -337,42 +336,6 @@ services:
         mailcow-network:
           aliases:
             - nginx
-
-    acme-mailcow:
-      depends_on:
-        - nginx-mailcow
-      image: mailcow/acme:1.76
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
-      environment:
-        - LOG_LINES=${LOG_LINES:-9999}
-        - ADDITIONAL_SAN=${ADDITIONAL_SAN}
-        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
-        - DBNAME=${DBNAME}
-        - DBUSER=${DBUSER}
-        - DBPASS=${DBPASS}
-        - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
-        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
-        - DIRECTORY_URL=${DIRECTORY_URL:-}
-        - ENABLE_SSL_SNI=${ENABLE_SSL_SNI:-n}
-        - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
-        - SKIP_HTTP_VERIFICATION=${SKIP_HTTP_VERIFICATION:-n}
-        - ONLY_MAILCOW_HOSTNAME=${ONLY_MAILCOW_HOSTNAME:-n}
-        - LE_STAGING=${LE_STAGING:-n}
-        - TZ=${TZ}
-        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
-        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
-        - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
-      volumes:
-        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw,Z
-        - ./data/assets/ssl:/var/lib/acme/:rw,z
-        - ./data/assets/ssl-example:/var/lib/ssl-example/:ro,Z
-        - mysql-socket-vol-1:/var/run/mysqld/:z
-      restart: always
-      networks:
-        mailcow-network:
-          aliases:
-            - acme
 
     netfilter-mailcow:
       image: mailcow/netfilter:1.38
