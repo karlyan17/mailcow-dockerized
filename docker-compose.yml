@@ -33,7 +33,7 @@ services:
         - MYSQL_INITDB_SKIP_TZINFO=1
       restart: always
       ports:
-        - "${SQL_PORT:-127.0.0.1:13306}:3306"
+        - "3306"
       networks:
         mailcow-network:
           aliases:
